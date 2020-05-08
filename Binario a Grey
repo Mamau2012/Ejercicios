@@ -25,19 +25,20 @@ START
     #define X PORTB, 7 
     
     MOVLW b'00000000' 
+    MOVWF i 
     MOVWF PORTA
-    MOVWF PORTB 
-    MOVWF i
 INICIO
-    BTFSC X
+    ;BTFSC X
     call SUMA
     GOTO INICIO
 
 SUMA:
-    MOVF PORTA, 0
-    MOVWF i
-    RRF i,1
-    ADDWF i,1
+    MOVF PORTA, 0 ;w=11001100
+    MOVWF i;i=w
+    RRF i,1;Rotar a la derecha i
+    XORWF i,1;i=i+w
+    MOVF i,0
+    MOVWF PORTB
     return
     
     END
