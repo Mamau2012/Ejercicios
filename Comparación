@@ -39,13 +39,11 @@ INICIO
     MOVWF i
     BTFSC Y
     MOVF PORTA, 0
-    nop
     SUBWF i,0
     
     BTFSC STATUS, 0 ;100
     call ver
-    BTFSC STATUS, 0 ;001
-    nop
+    BTFSC STATUS, 2 ;001
     BSF led3
     
     MOVLW b'00000000' 
@@ -62,4 +60,7 @@ INICIO
     return
 	
     
+   
+    
+
     END
