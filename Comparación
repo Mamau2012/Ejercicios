@@ -14,7 +14,6 @@ START
     MOVLW 0x07 ;Apagar comparadores
     MOVWF CMCON
 
-
     BCF STATUS, RP1 ;Cambiar al banco 1
     BSF STATUS, RP0 
     MOVLW b'11000000' 
@@ -54,13 +53,10 @@ INICIO
     GOTO INICIO
     
     ver:
-    BTFSC STATUS, 2 ;010
+    BTFSC STATUS, 2;010
     BSF led2
+    BTFSS STATUS, 2;010
     BSF led1
     return
 	
-    
-   
-    
-
     END
