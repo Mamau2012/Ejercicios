@@ -26,7 +26,6 @@ INICIO
     RRF j,1
     BCF STATUS,0
     RLF i,1
-    MOVF j,1
     BTFSS STATUS,2
     GOTO INICIO
     nop
