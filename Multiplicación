@@ -14,16 +14,9 @@ k equ 0x32
 START
     MOVLW 0x07 ;Apagar comparadores
     MOVWF CMCON
-
-
-    BCF STATUS, RP1 ;Cambiar al banco 1
-    BSF STATUS, RP0 
-    MOVLW b'11111111' 
-    MOVWF TRISA
-    BCF STATUS, RP0 ;Regresar al banco 0
-    MOVLW d'4'
+    MOVLW d'16'
     MOVWF i
-    MOVLW d'4'
+    MOVLW d'2'
     MOVWF j
 INICIO
     MOVF i,0
