@@ -21,20 +21,20 @@ START
     MOVLW b'11111111' 
     MOVWF TRISA
     BCF STATUS, RP0 ;Regresar al banco 0
-    MOVLW d'15'
+    MOVLW d'4'
     MOVWF i
-    MOVLW d'2'
+    MOVLW d'4'
     MOVWF j
 INICIO
     MOVF i,0
     BTFSC j,0
-    ADDWF k
-    BCF STATUS, C
+    ADDWF k,1
+    BCF STATUS, 0
     RRF j,1
-    BCF STATUS,C
+    BCF STATUS,0
     RLF i,1
     MOVF j,1
-    BTFSS STATUS,Z
+    BTFSS STATUS,2
     GOTO INICIO
     nop
 
