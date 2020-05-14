@@ -17,133 +17,33 @@ z equ 0x35
 START
     MOVLW 0x07 ;Apagar comparadores
     MOVWF CMCON
-    MOVLW d'25'
+    MOVLW d'144'
     MOVWF x
     MOVWF z
+    MOVLW d'1'
+    MOVWF y
 INICIO
-    BSF y,3;1000
+    
     MOVF y,0;w=j
     MOVWF i
     MOVWF j
     call multi;k es el resultado de la multiplicación
     MOVF k,0 ;w=k
     BSF STATUS,C ;C=1	------    si la resta da negativo, pondra en cero la C, el bit C = 0 ;si la resta da positiva, no le hara nada al bit C
-    SUBWF z,1 ;i-W --- Se guarda en Z
+    SUBWF z,1 ;i-W --- Se guarda en i
     BTFSS STATUS,Z
-    call continua
-    call prendeled1
-CONT1
-    MOVLW d'0'
-    MOVWF k
-    
-    BSF y,2
-    MOVF y,0
-    MOVWF i
-    MOVWF j
-    call multi
-    MOVF k,0
-    SUBWF z,1 ;i-W --- Se guarda en Z
-    BTFSS STATUS,Z
-    call continua1
-    call prendeled1
-CONT2  
-    MOVLW d'0'
-    MOVWF k
-    
-    
-    BSF y,1
-    MOVF y,0
-    MOVWF i
-    MOVWF j
-    call multi
-    MOVF k,0
-    SUBWF z,1 ;i-W --- Se guarda en Z
-    BTFSS STATUS,Z
-    call continua2
-    call prendeled1
-CONT3  
-    MOVLW d'0'
-    MOVWF k
-    
-    BSF y,0
-    MOVF y,0
-    MOVWF i
-    MOVWF j  
-    call multi
-    MOVF k,0
-    SUBWF z,1 ;i-W --- Se guarda en Z
-    BTFSS STATUS,Z
-    call continua3
-    call prendeled1
-CONT4   
-    MOVLW d'0'
-    MOVWF k
-    
-prendeled1:
-    GOTO FIN   ;Prende el led que indica que son iguales i y W
-    BCF STATUS,Z
-    BCF STATUS,C
-    BCF STATUS,1
-    return
- 
-continua:
-    BTFSC STATUS,C	    ;pregunta si hay un cero en C
-    call continua5
-    call prendeled2
-
-prendeled2:
-    BCF y,3	    ;prende el led que indica que es menor el primer numero (i) que en W(borro bit)
-    MOVLW d'0'
-    MOVWF z
-    GOTO CONT1
-    
-continua1:
-    BTFSC STATUS,C	    ;pregunta si hay un cero en C
-    call continua5
-    call prendeled21
-
-prendeled21:
-    BCF y,2	    ;prende el led que indica que es menor el primer numero (i) que en W(borro bit)
-    MOVLW d'0'
-    MOVWF z
-    GOTO CONT2
-    
-continua2:
-    BTFSC STATUS,C	    ;pregunta si hay un cero en C
-    call continua5
-    call prendeled22
-
-prendeled22:
-    BCF y,1	    ;prende el led que indica que es menor el primer numero (i) que en W(borro bit)
-    MOVLW d'0'
-    MOVWF z
-    GOTO CONT3
-    
-continua3:
-    BTFSC STATUS,C	    ;pregunta si hay un cero en C
-    call continua5
-    call prendeled23
-
-prendeled23:
-    BCF y,0	    ;prende el led que indica que es menor el primer numero (i) que en W(borro bit)
-    MOVLW d'0'
-    MOVWF z
-    GOTO CONT4
- 
-continua5:
-    ;prende el led que indica que es mayor el primer numero (i) que en W(dejo bit)
- ;;;;;;;SE pone todo en ceros;;;;;
-    BCF STATUS,Z
-    BCF STATUS,C
-    BCF STATUS,1
-    MOVLW d'0'
-    MOVWF z
-   return
-    
-    FIN
+    GOTO continua
     nop
+ 
+continua
+ INCFSZ y,1
+ MOVLW d'0'
+ MOVWF k
+ MOVF x,0
+ MOVWF z
+ GOTO INICIO
     
-    multi:
+ multi:
     MOVF i,0
     BTFSC j,0
     ADDWF k,1
@@ -152,7 +52,7 @@ continua5:
     BCF STATUS,0
     RLF i,1
     BTFSS STATUS,2
-    GOTO multi  
-    return
-    
+    call multi
+    return 
     END
+
