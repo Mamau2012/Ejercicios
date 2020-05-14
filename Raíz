@@ -1,0 +1,158 @@
+#include "p16F628a.inc"    ;incluir librerias relacionadas con el dispositivo
+ __CONFIG _FOSC_INTOSCCLK & _WDTE_OFF & _PWRTE_OFF & _MCLRE_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _CP_OFF    
+;configuración del dispositivotodo en OFF y la frecuencia de oscilador
+;es la del "reloj del oscilador interno" (INTOSCCLK)     
+RES_VECT  CODE    0x0000            ; processor reset vector
+    GOTO    START                   ; go to beginning of program
+; TODO ADD INTERRUPTS HERE IF USED
+MAIN_PROG CODE                      ; let linker place main program
+;variables para el contador:
+i equ 0x30
+j equ 0x31 
+k equ 0x32
+x equ 0x33
+y equ 0x34
+z equ 0x35
+;inicio del programa: 
+START
+    MOVLW 0x07 ;Apagar comparadores
+    MOVWF CMCON
+    MOVLW d'25'
+    MOVWF x
+    MOVWF z
+INICIO
+    BSF y,3;1000
+    MOVF y,0;w=j
+    MOVWF i
+    MOVWF j
+    call multi;k es el resultado de la multiplicación
+    MOVF k,0 ;w=k
+    BSF STATUS,C ;C=1	------    si la resta da negativo, pondra en cero la C, el bit C = 0 ;si la resta da positiva, no le hara nada al bit C
+    SUBWF z,1 ;i-W --- Se guarda en Z
+    BTFSS STATUS,Z
+    call continua
+    call prendeled1
+CONT1
+    MOVLW d'0'
+    MOVWF k
+    
+    BSF y,2
+    MOVF y,0
+    MOVWF i
+    MOVWF j
+    call multi
+    MOVF k,0
+    SUBWF z,1 ;i-W --- Se guarda en Z
+    BTFSS STATUS,Z
+    call continua1
+    call prendeled1
+CONT2  
+    MOVLW d'0'
+    MOVWF k
+    
+    
+    BSF y,1
+    MOVF y,0
+    MOVWF i
+    MOVWF j
+    call multi
+    MOVF k,0
+    SUBWF z,1 ;i-W --- Se guarda en Z
+    BTFSS STATUS,Z
+    call continua2
+    call prendeled1
+CONT3  
+    MOVLW d'0'
+    MOVWF k
+    
+    BSF y,0
+    MOVF y,0
+    MOVWF i
+    MOVWF j  
+    call multi
+    MOVF k,0
+    SUBWF z,1 ;i-W --- Se guarda en Z
+    BTFSS STATUS,Z
+    call continua3
+    call prendeled1
+CONT4   
+    MOVLW d'0'
+    MOVWF k
+    
+prendeled1:
+    GOTO FIN   ;Prende el led que indica que son iguales i y W
+    BCF STATUS,Z
+    BCF STATUS,C
+    BCF STATUS,1
+    return
+ 
+continua:
+    BTFSC STATUS,C	    ;pregunta si hay un cero en C
+    call continua5
+    call prendeled2
+
+prendeled2:
+    BCF y,3	    ;prende el led que indica que es menor el primer numero (i) que en W(borro bit)
+    MOVLW d'0'
+    MOVWF z
+    GOTO CONT1
+    
+continua1:
+    BTFSC STATUS,C	    ;pregunta si hay un cero en C
+    call continua5
+    call prendeled21
+
+prendeled21:
+    BCF y,2	    ;prende el led que indica que es menor el primer numero (i) que en W(borro bit)
+    MOVLW d'0'
+    MOVWF z
+    GOTO CONT2
+    
+continua2:
+    BTFSC STATUS,C	    ;pregunta si hay un cero en C
+    call continua5
+    call prendeled22
+
+prendeled22:
+    BCF y,1	    ;prende el led que indica que es menor el primer numero (i) que en W(borro bit)
+    MOVLW d'0'
+    MOVWF z
+    GOTO CONT3
+    
+continua3:
+    BTFSC STATUS,C	    ;pregunta si hay un cero en C
+    call continua5
+    call prendeled23
+
+prendeled23:
+    BCF y,0	    ;prende el led que indica que es menor el primer numero (i) que en W(borro bit)
+    MOVLW d'0'
+    MOVWF z
+    GOTO CONT4
+ 
+continua5:
+    ;prende el led que indica que es mayor el primer numero (i) que en W(dejo bit)
+ ;;;;;;;SE pone todo en ceros;;;;;
+    BCF STATUS,Z
+    BCF STATUS,C
+    BCF STATUS,1
+    MOVLW d'0'
+    MOVWF z
+   return
+    
+    FIN
+    nop
+    
+    multi:
+    MOVF i,0
+    BTFSC j,0
+    ADDWF k,1
+    BCF STATUS, 0
+    RRF j,1
+    BCF STATUS,0
+    RLF i,1
+    BTFSS STATUS,2
+    GOTO multi  
+    return
+    
+    END
