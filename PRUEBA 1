@@ -22,7 +22,6 @@ START
 
 i equ 0x30
 j equ 0x31
-BAND equ 0x35
 K equ 0x34
 
 X equ 0x32
@@ -74,9 +73,6 @@ INITLCD
     BCF PORTC,1
     CALL time
     
-    MOVLW B'00000000'
-    MOVWF BAND
-    
 
 INICIO	  
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -84,8 +80,6 @@ INICIO
     CALL BTN1
     BTFSC PORTB, 1
      CALL BTN2
-     BTFSC PORTE, 4
-     CALL RESET
       
 
      
@@ -96,7 +90,7 @@ INICIO
     BCF PORTC,0		;command mode
     CALL time
     
-    MOVLW 0x80  ;LCD position
+    MOVLW 0x80		;LCD position
     MOVWF PORTD
     CALL exec
     
@@ -227,18 +221,21 @@ INICIO
     CALL print0
     BTFSC Y,0
     CALL print1    
+      
+    BCF PORTC,0		;command mode
+    CALL time
     
-   BSF STATUS,C ;C=1	------    si la resta da negativo, pondra en cero la C, el bit C = 0 ;si la resta da positiva, no le hara nada al bit C
+    MOVLW 0x80		;LCD position
+    MOVWF PORTD
+    CALL exec
+    
    MOVF Y,0
    SUBWF K,1 ;i-W --- Se guarda en i
 	
    BTFSS STATUS,Z
    GOTO continua
    GOTO prendeled1
-    ;BTFSS BAND,0
-    ;CALL BANDERA
    GOTO INICIO
-  
  
 
 
@@ -252,27 +249,11 @@ print0
     nop
     RETURN
     
- BANDERA
- 
-     BCF PORTC,0		;command mode
-  CALL time
-    
-   MOVLW 0x8D 		;LCD position
-   MOVWF PORTD
-   CALL exec
-
-   BSF PORTC,0		;data mode
-   CALL time
-   MOVLW b'111101'
-   MOVWF PORTD
-   CALL exec
-   RETURN
-    
 MAYOR
    BCF PORTC,0		;command mode
    CALL time
     
-   MOVLW 0x8D 		;LCD position
+   MOVLW 0x8D		;LCD position
    MOVWF PORTD
    CALL exec
 
@@ -288,7 +269,7 @@ MAYOR
    BCF PORTC,0		;command mode
    CALL time
     
-   MOVLW 0x8D 		;LCD position
+   MOVLW 0x8D		;LCD position
    MOVWF PORTD
    CALL exec
 
@@ -304,7 +285,7 @@ MAYOR
   BCF PORTC,0		;command mode
   CALL time
     
-   MOVLW 0x8D 		;LCD position
+   MOVLW 0x8D		;LCD position
    MOVWF PORTD
    CALL exec
 
@@ -381,29 +362,22 @@ CALL MAYOR    ;prende el led que indica que es mayor el primer numero (i) que en
  GOTO INICIO
  
 
-RESET
-   MOVLW B'00000000'
-   MOVWF X
-   MOVWF Y
-   RETURN
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
     
 BTN1
-   ;MOVLW B'00000001'
-   ;MOVWF BAND
-   MOVF PORTA, 0
-   MOVWF X
-   MOVWF K
-  
+ MOVF PORTA, 0
+    MOVWF X
+    MOVWF K
+    MOVLW b'00000000' 
+    MOVWF PORTA
 RETURN
 
 BTN2
-
-    ;MOVLW B'00000001'
-    ;MOVWF BAND
     MOVF PORTA, 0
     MOVWF Y
- 
+    BSF STATUS,C ;C=1	------    si la resta da negativo, pondra en cero la C, el bit C = 0 ;si la resta da positiva, no le hara nada al bit C
+   
    RETURN
     
 			
